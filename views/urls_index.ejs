@@ -1,3 +1,4 @@
+<% include partials/_header %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,10 +11,11 @@
 </head>
 <body style="font-size:20px; padding:50px;">
         
-        <a href="empty">empty link</a>
+        <a href="empty">Create New TinyURL</a>
+        <h1>My URLs</h1>
         <% for (let key in urls) {%> 
            
-           <h1> short url: <%= key %> </h1>  <h3> long url : <%=urls[key]  %></h3>
+           <li>  <%= key %>: <%=urls[key]  %></li>  
          <%} %>
         
 </body>
