@@ -19,13 +19,22 @@ app.set("view engine", "ejs");
         return Math.random().toString(36).slice(2,8);
 }
 
+function emailExist(email) {
+  for (let key in users) {
+    if (users[key]['email'] === email) {
+      return true;
+    }
+  }
+  return false;
+}
+
 //global objects for accessing data
-var urlDatabase = {
+let urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
     "9sm5xK": "http://www.google.com"
   };
 
-  const users = { 
+  var users = { 
     "userRandomID": {
       id: "userRandomID", 
       email: "user@example.com", 
@@ -47,7 +56,7 @@ var urlDatabase = {
     });
     
 
-
+    // /urls/new page with
     app.get('/urls/new', function(req, res){
       let templateVars = { 
         urls: urlDatabase,
@@ -74,6 +83,8 @@ var urlDatabase = {
 
     // adds random id, email, and password to the users object
     app.post("/register", (req, res) => {
+      
+      if(req.body.email && req.body.password){
       const idRand = generateRandomString()
       var add = {
         id: idRand,
@@ -82,8 +93,25 @@ var urlDatabase = {
       }
 
       users[idRand] = add
-      console.log(users)
       res.redirect('/urls')
+    }else {
+      res.sendStatus(400)
+    }
+
+    if(emailExist(req.body.email)){
+      res.sendStatus(400)
+      console.log(req.body.email)
+    }
+      // if(add[password][req.body.password] && add[email][req.body.email] == ""){
+        
+
+      //   res.redirect('/urls')
+      // }else{
+      //   res.sendStatus(400);
+      // }
+      // console.log(users)
+      console.log(users)
+    
       });
 
 
@@ -127,6 +155,7 @@ var urlDatabase = {
 
     });
     
+    // generates URL
     app.post("/urls", (req, res) => {
         var random = generateRandomString();
         var longURL = req.body.longURL;
