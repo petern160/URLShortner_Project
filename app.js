@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
+
+
+// middleware
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 
@@ -34,10 +37,17 @@ var urlDatabase = {
       password: "dishwasher-funk"
     }
   }
-    app.get("/", (req, res) => {
-    res.send("warkajrwkla!");
+
+    //register page
+    app.get("/register", (req, res) => {
+      let templateVars = { 
+        users: users,
+       };
+    res.render("emailpw", templateVars);
     });
-    //
+    
+
+
     app.get('/urls/new', function(req, res){
       let templateVars = { 
         urls: urlDatabase,
@@ -61,7 +71,22 @@ var urlDatabase = {
         const longURL = urlDatabase[req.params.shortURL];
         res.redirect(longURL);
     });
-    
+
+    // adds random id, email, and password to the users object
+    app.post("/register", (req, res) => {
+      const idRand = generateRandomString()
+      var add = {
+        id: idRand,
+        email: req.body.email,
+        password: req.body.password
+      }
+
+      users[idRand] = add
+      console.log(users)
+      res.redirect('/urls')
+      });
+
+
     //:shortURL sets parameter on our local host such as /urls/b2xVn2
     app.get("/urls/:shortURL", (req, res) => {
         let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
