@@ -8,9 +8,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
+
 <body style="font-size:20px; padding:50px;">
         <a href="<%= longURL %>">empty link</a>
-       <h1><%= shortURL %></h1>
-        
+       <h1>ShortURL: <%= shortURL %></h1>
+       <form method ="POST" action='/urls/<%= shortURL %>/update'>
+          
+          <input class="form-control" type="test" name="longURL" placeholder="http://">
+          <button type="submit" class="btn btn-primary">Update</button>
+      </form>
 </body>
 </html>
