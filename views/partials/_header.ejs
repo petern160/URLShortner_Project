@@ -1,1 +1,19 @@
+
+    <% if(username){ %>
+        <form method="POST" action="/logout">
+        <h1><%= username %></h1>
+        <button type="submit" class="btn btn-dark">Logout</button>
+    </form>
+      <% } else{ %>  
+        <h1><form method="POST" action="/login">
+    
+            <label>enter username below:</label><br>
+            <input type="text" name="username">
+            <button type="submit" class="btn btn-dark">Submit Login</button>
+            
+        </form></h1>
+     <% } %>
+
+
+
 <h1>TinyApp</h1>
