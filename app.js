@@ -83,8 +83,12 @@ let urlDatabase = {
 
     // adds random id, email, and password to the users object
     app.post("/register", (req, res) => {
+      // error handles empty string and duplicate emails
+      if(!req.body.email || !req.body.password || emailExist(req.body.email)) {
+        res.sendStatus(400)
+        return;
+      }
       
-      if(req.body.email && req.body.password){
       const idRand = generateRandomString()
       var add = {
         id: idRand,
@@ -93,15 +97,11 @@ let urlDatabase = {
       }
 
       users[idRand] = add
+      console.log(users)
       res.redirect('/urls')
-    }else {
-      res.sendStatus(400)
-    }
 
-    if(emailExist(req.body.email)){
-      res.sendStatus(400)
-      console.log(req.body.email)
-    }
+
+    
       // if(add[password][req.body.password] && add[email][req.body.email] == ""){
         
 
