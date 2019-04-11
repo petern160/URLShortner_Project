@@ -19,6 +19,8 @@ app.set("view engine", "ejs");
         return Math.random().toString(36).slice(2,8);
 }
 
+var newCookie = generateRandomString();
+
 // checks if password and emails match
 function passwordCheck(pass, email) {
   for (let key in users) {
@@ -34,11 +36,21 @@ function passwordCheck(pass, email) {
 function emailExist(email) {
   for (let key in users) {
     if (users[key]['email'] === email) {
-      return true;
+      return users[key];
     }
   }
   return false;
 }
+
+function getUserId(email){
+  for (let key in users) {
+    if (users[key]['email'] === email) {
+      return users[key].id;
+    }
+  }
+  return false;
+}
+
 
 //global objects for accessing data
 let urlDatabase = {
@@ -50,7 +62,7 @@ let urlDatabase = {
   var users = { 
     "userRandomID": {
       id: "userRandomID", 
-      email: "user@example.com", 
+      email: "test@gmail.com", 
       password: "123"
     },
    "user2RandomID": {
@@ -78,7 +90,7 @@ let urlDatabase = {
         res.render("urls_new", templateVars);
         });
 
-
+        //
         app.get('/login', function(req, res){
           let templateVars = { 
             urls: urlDatabase,
@@ -92,8 +104,10 @@ let urlDatabase = {
         let templateVars = { 
           urls: urlDatabase,
           user: users[req.cookies['user_id']]
+          
          };
-
+      
+         
         res.render("urls_index", templateVars);
     });
 
@@ -118,8 +132,8 @@ let urlDatabase = {
       }
 
       users[idRand] = add
-      res.cookie('user_id', req.body.email);
-      console.log(users)
+      res.cookie('user_id', idRand);
+      
       res.redirect('/urls')
 
 
@@ -132,7 +146,7 @@ let urlDatabase = {
       //   res.sendStatus(400);
       // }
       // console.log(users)
-      console.log(users)
+     
     
       });
 
@@ -147,19 +161,24 @@ let urlDatabase = {
 
         // gets cookie information and saves it in the developer tools
         app.post('/login', (req, res) => {
-          res.cookie('user_id', req.body.email);
-          let emailID = req.body.email;
-          let passID = req.body.password;
-
-          if(!emailExist(emailID)){
+          
+          let email = req.body.email;
+          let pass = req.body.password;
+          console.log('req body', req.body)
+          if(!emailExist(email)){
             res.status(403).send("Status Code 403: Email address does not exist! Please Register")
           }
 
-          if(!passwordCheck(passID, emailID)){
+          if(!passwordCheck(pass, email)){
             res.status(403).send("Status Code 403: password does not match!")
           }
          
-          res.redirect('/urls');
+          
+            res.cookie('user_id', getUserId(email));
+            res.redirect('/urls');
+           
+           
+          
         })
 
         // clears cookie when logout
@@ -168,7 +187,7 @@ let urlDatabase = {
             username: undefined,
           };
           
-          res.clearCookie('username');
+          res.clearCookie('user_id');
           res.redirect('/urls')
         });
         
