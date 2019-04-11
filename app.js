@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
-
+const bcrypt = require('bcrypt');
 
 // middleware
 app.use(bodyParser.urlencoded({extended: true}));
