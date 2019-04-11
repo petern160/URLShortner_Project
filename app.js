@@ -52,15 +52,24 @@ function getUserId(email){
   return false;
 }
 
+function urlsForUser(id) {
+  let result = {};
+   for(var key in urlDatabase){
+     if (urlDatabase[key].userID === id){
+     result[key] = urlDatabase[key];
+     }
+   }
+   return result;
+  }
 
 // function returns URLS where userID is equal to the id of currently logged users
 
 
 //global objects for accessing data
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
-  jih76f: { longURL: "https://www.reddit.com", userID: "aJ48lW" }
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" },
+  jih76f: { longURL: "https://www.reddit.com", userID: "user2RandomID" }
 };
 
   //can use this object for test cases login password match etc
@@ -73,7 +82,7 @@ const urlDatabase = {
    "user2RandomID": {
       id: "user2RandomID", 
       email: "user2@example.com", 
-      password: "dishwasher-funk"
+      password: "1234"
     }
   }
 
@@ -115,7 +124,7 @@ const urlDatabase = {
     app.get('/urls', function(req, res){
      
         let templateVars = { 
-          urls: urlDatabase,
+          urls: urlsForUser(req.cookies['user_id']),
           user: users[req.cookies['user_id']]
           
          };
@@ -166,8 +175,19 @@ const urlDatabase = {
 
     //:shortURL sets parameter on our local host such as /urls/b2xVn2
     app.get("/urls/:shortURL", (req, res) => {
-        let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-        res.render("urls_show", templateVars);
+        let templateVars = { 
+          shortURL: req.params.shortURL,
+          longURL: urlDatabase[req.params.shortURL],
+          urls: urlsForUser(req.cookies['user_id'])
+          };
+
+          // if user trys to access :shortURL redirect to login
+          if(!req.cookies['user_id']){
+            res.redirect("/login")
+          }else{
+            res.render("urls_show", templateVars);
+          }
+       
         var urlShort = req.params.name
         var short = urlDatabase[urlShort]
         });
@@ -217,7 +237,7 @@ const urlDatabase = {
         const id = req.params.id;
         const update = req.body.longURL;
         if(update) {
-        urlDatabase[id] = {longURL: update, userID: urlDatabase[id].user_id }; 
+        urlDatabase[id].longURL = update; 
         console.log("update", urlDatabase)
         }
         res.redirect('/urls');
@@ -228,7 +248,7 @@ const urlDatabase = {
     app.post("/urls", (req, res) => {
         var random = generateRandomString();
         var longURL = req.body.longURL;
-        urlDatabase[random] = {longURL: longURL, userID: res.cookie.user_id };  
+        urlDatabase[random] = {longURL: longURL, userID: req.cookies.user_id };  
         console.log("test",urlDatabase);
         res.redirect(`/urls/${random}`);
     });
