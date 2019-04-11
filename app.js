@@ -42,6 +42,7 @@ function emailExist(email) {
   return false;
 }
 
+// function for cookies and id
 function getUserId(email){
   for (let key in users) {
     if (users[key]['email'] === email) {
@@ -52,11 +53,15 @@ function getUserId(email){
 }
 
 
+// function returns URLS where userID is equal to the id of currently logged users
+
+
 //global objects for accessing data
-let urlDatabase = {
-    "b2xVn2": "http://www.lighthouselabs.ca",
-    "9sm5xK": "http://www.google.com"
-  };
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  jih76f: { longURL: "https://www.reddit.com", userID: "aJ48lW" }
+};
 
   //can use this object for test cases login password match etc
   var users = { 
@@ -84,10 +89,18 @@ let urlDatabase = {
     // /urls/new page with
     app.get('/urls/new', function(req, res){
       let templateVars = { 
-        urls: urlDatabase,
-        user: users[req.cookies['user_id']]
+      
+        user: users[req.cookies['user_id']],
+        users: users
+      
        };
-        res.render("urls_new", templateVars);
+       if(req.cookies['user_id']){
+         
+         res.render('urls_new', templateVars)
+       }else{
+         res.redirect('/login')
+       }
+        // res.render("urls_new", templateVars);
         });
 
         //
@@ -164,7 +177,7 @@ let urlDatabase = {
           
           let email = req.body.email;
           let pass = req.body.password;
-          console.log('req body', req.body)
+          //console.log('req body', req.body)
           if(!emailExist(email)){
             res.status(403).send("Status Code 403: Email address does not exist! Please Register")
           }
@@ -200,9 +213,13 @@ let urlDatabase = {
     
     //update functionality
     app.post("/urls/:id/update", (req, res) => {
+        //console.log(req) 
         const id = req.params.id;
         const update = req.body.longURL;
-        urlDatabase[id] = update;
+        if(update) {
+        urlDatabase[id] = {longURL: update, userID: urlDatabase[id].user_id }; 
+        console.log("update", urlDatabase)
+        }
         res.redirect('/urls');
 
     });
@@ -211,7 +228,8 @@ let urlDatabase = {
     app.post("/urls", (req, res) => {
         var random = generateRandomString();
         var longURL = req.body.longURL;
-        urlDatabase[random] = longURL;  
+        urlDatabase[random] = {longURL: longURL, userID: res.cookie.user_id };  
+        console.log("test",urlDatabase);
         res.redirect(`/urls/${random}`);
     });
 
