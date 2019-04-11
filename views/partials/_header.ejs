@@ -1,19 +1,22 @@
 
-    <% if(username){ %>
+    <% if(user){ %>
+        
         <form method="POST" action="/logout">
-        <h1>Logged in as: <%= username %></h1>
+        <h1>Logged in as: <%= user.email %></h1>
         <button type="submit" class="btn btn-dark">Logout</button>
     </form>
       <% } else{ %>  
-        <h1><form method="POST" action="/login">
+        <h1>
     
-            <label>enter username below:</label><br>
-            <input type="text" name="username">
-            <button type="submit" class="btn btn-dark">Submit Login</button>
-            
-        </form></h1>
+            <a href="/register"> register here</a> <br>
+            <a href="/login"> login</a>
+           
+       </h1>
+
      <% } %>
 
 
-
+     
+        
+        
 <h1>TinyApp</h1>
