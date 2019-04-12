@@ -32,6 +32,11 @@ function passwordCheck(pass, email) {
   }return false
 }
 
+// check if id matches and if shortURL matches so you cannot delete
+function checkUserID(id, shortURL){
+  return(urlDatabase[shortURL].userID === id);
+}
+
 // checks duplicate email
 function emailExist(email) {
   for (let key in users) {
@@ -86,11 +91,15 @@ const urlDatabase = {
     }
   }
 
+  //function passHash ()
     //register page
     app.get("/register", (req, res) => {
+      
       let templateVars = { 
         users: users,
        };
+
+   
     res.render("emailpw", templateVars);
     });
     
@@ -129,12 +138,14 @@ const urlDatabase = {
           
          };
       
-         
+           console.log(urlsForUser(req.cookies['user_id']))
         res.render("urls_index", templateVars);
     });
+    console.log(urlDatabase)
 
     app.get('/u/:shortURL', function(req, res){
-        const longURL = urlDatabase[req.params.shortURL];
+        const longURL = urlDatabase[req.params.shortURL].longURL;
+        console.log(longURL)
         res.redirect(longURL);
     });
 
@@ -147,12 +158,15 @@ const urlDatabase = {
       }
       
       const idRand = generateRandomString()
+      
       var add = {
         id: idRand,
         email: req.body.email,
-        password: req.body.password
+        password: bcrypt.hashSync(req.body.password, 10)
       }
+      
 
+   
       users[idRand] = add
       res.cookie('user_id', idRand);
       
@@ -208,9 +222,7 @@ const urlDatabase = {
          
           
             res.cookie('user_id', getUserId(email));
-            res.redirect('/urls');
-           
-           
+            res.redirect('/urls');        
           
         })
 
@@ -224,12 +236,22 @@ const urlDatabase = {
           res.redirect('/urls')
         });
         
-        //delete functionality
-    app.post("/urls/:shortURL/delete", (req, res) => {
-        const shortURL = req.params.shortURL;
-        delete urlDatabase[shortURL];
-        res.redirect('/urls');
-    });
+        //delete functionality redirects user if they try to delete url if the id does not match
+        app.post('/urls/:shortURL/delete', (req,res) => {
+          const userID = req.cookies['user_id'];
+          const shortURL = req.params.shortURL;
+         
+          if(userID){
+              if(checkUserID(userID, shortURL)){
+                delete urlDatabase[shortURL];
+                res.redirect('/urls');
+            } else {
+                res.send('YOU DO NOT HAVE PERMISSION TO DELETE');
+            }
+          } else {
+              res.send('YOU DO NOT HAVE PERMISSION TO DELETE');
+          }
+         });
     
     //update functionality
     app.post("/urls/:id/update", (req, res) => {
@@ -238,7 +260,7 @@ const urlDatabase = {
         const update = req.body.longURL;
         if(update) {
         urlDatabase[id].longURL = update; 
-        console.log("update", urlDatabase)
+        // console.log("update", urlDatabase)
         }
         res.redirect('/urls');
 
@@ -249,7 +271,7 @@ const urlDatabase = {
         var random = generateRandomString();
         var longURL = req.body.longURL;
         urlDatabase[random] = {longURL: longURL, userID: req.cookies.user_id };  
-        console.log("test",urlDatabase);
+        // console.log("test",urlDatabase);
         res.redirect(`/urls/${random}`);
     });
 
@@ -257,3 +279,4 @@ const urlDatabase = {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
