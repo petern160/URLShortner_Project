@@ -22,11 +22,12 @@ var newCookie = generateRandomString();
 function passwordCheck(pass, email) {
   for (let key in users) {
    if(emailExist(email)){
-     if(users[key].password === pass){
+    if (bcrypt.compareSync(pass, users[key].password)){
        return true;
      }
    }
-  }return false
+  }
+  return false
 }
 
 // check if id matches and if shortURL matches so you cannot delete
@@ -207,6 +208,7 @@ const urlDatabase = {
           
           let email = req.body.email;
           let pass = req.body.password;
+          console.log('compare pw', bcrypt.compareSync(req.body.password, pass))
           //console.log('req body', req.body)
           if(!emailExist(email)){
             res.status(403).send("Status Code 403: Email address does not exist! Please Register")
