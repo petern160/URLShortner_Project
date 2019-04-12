@@ -27,5 +27,5 @@ For people that like to tweet out multiple links or maybe perhaps you have a rea
 
 ## Final Product
 
-!["screenshot of login page"](./docs/urls-page.png)
-!["sceenshot of url page"](.docs/login-page.png)
+!["sceenshot of url page"](./docs/urls-page.png)
+!["sceenshot of login page"](./docs/login-page.png)
