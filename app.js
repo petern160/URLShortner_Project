@@ -7,10 +7,7 @@ const bcrypt = require('bcrypt');
 // middleware
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
-
 var PORT = 8080; // default port 8080
-
-
 app.set("view engine", "ejs");
 
 
@@ -91,15 +88,13 @@ const urlDatabase = {
     }
   }
 
-  //function passHash ()
+ 
     //register page
     app.get("/register", (req, res) => {
-      
       let templateVars = { 
         users: users,
        };
 
-   
     res.render("emailpw", templateVars);
     });
     
@@ -157,6 +152,7 @@ const urlDatabase = {
         return;
       }
       
+      // password protector generates hashs
       const idRand = generateRandomString()
       
       var add = {
@@ -166,7 +162,7 @@ const urlDatabase = {
       }
       
 
-   
+      console.log(add)
       users[idRand] = add
       res.cookie('user_id', idRand);
       
